@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.com/gegenrated" elementFormDefault="qualified">
+  <complexType name="Namespace">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="members" type="string" use="required"/>
+    <attribute name="mangled" type="string" use="required"/>
+    <attribute name="demangled" type="string" use="required"/>
+    <attribute name="context" type="string"/>
+  </complexType>
+  <complexType name="Argument">
+    <attribute name="name" type="string"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="location" type="string"/>
+    <attribute name="file" type="string"/>
+    <attribute name="line" type="string"/>
+  </complexType>
+  <complexType name="Function">
+    <sequence minOccurs="0" maxOccurs="1">
+      <sequence minOccurs="1" maxOccurs="unbounded">
+        <choice>
+          <element name="Argument" type="Argument"/>
+          <element name="Ellipsis"/>
+        </choice>
+      </sequence>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="returns" type="string" use="required"/>
+    <attribute name="throw" type="string"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="mangled" type="string"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="extern" type="string"/>
+    <attribute name="attributes" type="string"/>
+    <attribute name="demangled" type="string"/>
+    <attribute name="endline" type="string"/>
+    <attribute name="inline" type="string"/>
+    <attribute name="static" type="string"/>
+  </complexType>
+  <complexType name="Struct">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="mangled" type="string" use="required"/>
+    <attribute name="demangled" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="artificial" type="string"/>
+    <attribute name="size" type="string"/>
+    <attribute name="align" type="string" use="required"/>
+    <attribute name="members" type="string"/>
+    <attribute name="bases" type="string"/>
+    <attribute name="incomplete" type="string"/>
+    <attribute name="attributes" type="string"/>
+    <attribute name="access" type="string"/>
+  </complexType>
+  <complexType name="Typedef">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+  </complexType>
+  <complexType name="FundamentalType">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="size" type="string"/>
+    <attribute name="align" type="string" use="required"/>
+  </complexType>
+  <complexType name="EnumValue">
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="init" type="string" use="required"/>
+  </complexType>
+  <complexType name="Enumeration">
+    <sequence minOccurs="0" maxOccurs="unbounded">
+      <element name="EnumValue" type="EnumValue"/>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="size" type="string" use="required"/>
+    <attribute name="align" type="string" use="required"/>
+    <attribute name="artificial" type="string"/>
+  </complexType>
+  <complexType name="Union">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="mangled" type="string" use="required"/>
+    <attribute name="demangled" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="size" type="string" use="required"/>
+    <attribute name="align" type="string" use="required"/>
+    <attribute name="members" type="string" use="required"/>
+    <attribute name="bases" type="string" use="required"/>
+    <attribute name="artificial" type="string"/>
+    <attribute name="access" type="string"/>
+  </complexType>
+  <complexType name="Variable">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="extern" type="string" use="required"/>
+  </complexType>
+  <complexType name="PointerType">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="size" type="string" use="required"/>
+    <attribute name="align" type="string" use="required"/>
+  </complexType>
+  <complexType name="FunctionType">
+    <sequence minOccurs="0" maxOccurs="unbounded">
+      <element name="Argument" type="Argument"/>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="returns" type="string" use="required"/>
+  </complexType>
+  <complexType name="ArrayType">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="min" type="string" use="required"/>
+    <attribute name="max" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="size" type="string"/>
+    <attribute name="align" type="string" use="required"/>
+  </complexType>
+  <complexType name="Unimplemented">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="tree_code" type="string" use="required"/>
+    <attribute name="tree_code_name" type="string" use="required"/>
+    <attribute name="node" type="string" use="required"/>
+  </complexType>
+  <complexType name="Field">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="offset" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="access" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="bits" type="string"/>
+  </complexType>
+  <complexType name="Destructor">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="artificial" type="string" use="required"/>
+    <attribute name="throw" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="access" type="string" use="required"/>
+    <attribute name="mangled" type="string" use="required"/>
+    <attribute name="demangled" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="endline" type="string" use="required"/>
+    <attribute name="inline" type="string" use="required"/>
+  </complexType>
+  <complexType name="OperatorMethod">
+    <element name="Argument" type="Argument"/>
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+    <attribute name="returns" type="string" use="required"/>
+    <attribute name="artificial" type="string" use="required"/>
+    <attribute name="throw" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="access" type="string" use="required"/>
+    <attribute name="mangled" type="string" use="required"/>
+    <attribute name="demangled" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="endline" type="string" use="required"/>
+    <attribute name="inline" type="string" use="required"/>
+  </complexType>
+  <complexType name="Constructor">
+    <sequence minOccurs="0" maxOccurs="1">
+      <element name="Argument" type="Argument"/>
+    </sequence>
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string"/>
+    <attribute name="artificial" type="string" use="required"/>
+    <attribute name="throw" type="string" use="required"/>
+    <attribute name="context" type="string" use="required"/>
+    <attribute name="access" type="string" use="required"/>
+    <attribute name="mangled" type="string" use="required"/>
+    <attribute name="demangled" type="string" use="required"/>
+    <attribute name="location" type="string" use="required"/>
+    <attribute name="file" type="string" use="required"/>
+    <attribute name="line" type="string" use="required"/>
+    <attribute name="endline" type="string"/>
+    <attribute name="inline" type="string" use="required"/>
+  </complexType>
+  <complexType name="CvQualifiedType">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="restrict" type="string"/>
+    <attribute name="const" type="string"/>
+    <attribute name="volatile" type="string"/>
+  </complexType>
+  <complexType name="ReferenceType">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="type" type="string" use="required"/>
+    <attribute name="size" type="string" use="required"/>
+    <attribute name="align" type="string" use="required"/>
+  </complexType>
+  <complexType name="File">
+    <attribute name="id" type="string" use="required"/>
+    <attribute name="name" type="string" use="required"/>
+  </complexType>
+  <element name="GCC_XML" type="GCC_XML"/>
+  <complexType name="GCC_XML">
+    <sequence minOccurs="1" maxOccurs="unbounded">
+      <choice>
+        <element name="Namespace" type="Namespace"/>
+        <element name="Function" type="Function"/>
+        <element name="Struct" type="Struct"/>
+        <element name="Typedef" type="Typedef"/>
+        <element name="FundamentalType" type="FundamentalType"/>
+        <element name="Enumeration" type="Enumeration"/>
+        <element name="Union" type="Union"/>
+        <element name="Variable" type="Variable"/>
+        <element name="PointerType" type="PointerType"/>
+        <element name="FunctionType" type="FunctionType"/>
+        <element name="ArrayType" type="ArrayType"/>
+        <element name="Unimplemented" type="Unimplemented"/>
+        <element name="Field" type="Field"/>
+        <element name="Destructor" type="Destructor"/>
+        <element name="OperatorMethod" type="OperatorMethod"/>
+        <element name="Constructor" type="Constructor"/>
+        <element name="CvQualifiedType" type="CvQualifiedType"/>
+        <element name="ReferenceType" type="ReferenceType"/>
+        <element name="File" type="File"/>
+      </choice>
+    </sequence>
+    <attribute name="cvs_revision" type="string" use="required"/>
+  </complexType>
+</schema>
