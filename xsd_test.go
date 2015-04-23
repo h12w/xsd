@@ -12,7 +12,7 @@ import (
 
 func Test(t *testing.T) {
 	var s Schema
-	f, err := os.Open("xsd/gccxml.xsd")
+	f, err := os.Open("data/gccxml.xsd")
 	checkError(err)
 	defer f.Close()
 	checkError(xml.NewDecoder(f).Decode(&s))
