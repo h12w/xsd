@@ -62,6 +62,9 @@ func (s Sequence) Gen(w io.Writer, plural bool) {
 	for _, choice := range s.Choices {
 		choice.Gen(w, plural)
 	}
+	for _, elem := range s.Elements {
+		elem.Gen(w, plural)
+	}
 }
 
 func (c Choice) Gen(w io.Writer, plural bool) {
