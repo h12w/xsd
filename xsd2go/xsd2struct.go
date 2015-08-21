@@ -9,7 +9,12 @@ import (
 )
 
 func main() {
-	files := os.Args[1:]
+	if len(os.Args) == 1 {
+		fmt.Println("xsd2struct [package name] [file]...")
+	}
+	pkg := os.Args[1]
+	files := os.Args[2:]
+	fmt.Println("package", pkg)
 	for _, file := range files {
 		gen(file)
 	}

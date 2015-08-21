@@ -5,15 +5,124 @@
 package xsd
 
 import (
-	"bitbucket.org/pkg/inflect"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
+
+	"bitbucket.org/pkg/inflect"
 )
 
-func (s Schema) Gen(w io.Writer) {
+type Type interface {
+	TypeName() string
+	Gen(w io.Writer)
+}
+type Types []Type
+
+func (a Types) Len() int           { return len(a) }
+func (a Types) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a Types) Less(i, j int) bool { return a[i].TypeName() < a[j].TypeName() }
+
+type collector struct {
+	set   map[string]bool
+	types Types
+}
+
+func newCollector() *collector {
+	return &collector{
+		make(map[string]bool),
+		nil,
+	}
+}
+
+func (c *collector) add(t Type) {
+	if !c.set[t.TypeName()] {
+		c.types = append(c.types, t)
+		c.set[t.TypeName()] = true
+	}
+}
+
+func (c *collector) needPlural(name string) {
+	c.add(pluralType{
+		Name: inflect.Pluralize(name),
+		Type: name,
+	})
+}
+
+func (s *Schema) Gen(w io.Writer) {
+	c := newCollector()
+	s.collect(c)
+	sort.Sort(c.types)
+	for _, t := range c.types {
+		t.Gen(w)
+	}
+}
+
+func (s *Schema) collect(c *collector) {
+	for _, element := range s.Elements {
+		element.collect(c)
+	}
 	for _, complexType := range s.ComplexTypes {
-		complexType.Gen(w)
+		complexType.collect(c)
+	}
+}
+
+func (t ComplexType) collect(c *collector) {
+	for _, sequence := range t.Sequences {
+		sequence.collect(c)
+	}
+	for _, choice := range t.Choices {
+		choice.collect(c)
+	}
+	c.add(t)
+}
+
+type pluralType struct {
+	Name string
+	Type string
+}
+
+func (t pluralType) TypeName() string {
+	return t.Name
+}
+
+func (t ComplexType) TypeName() string {
+	return t.GoName()
+}
+
+func (t pluralType) Gen(w io.Writer) {
+	p(w, "type ", t.Name, " []", t.Type)
+	p(w)
+}
+
+func (s Sequence) collect(c *collector) {
+	for _, element := range s.Elements {
+		element.collect(c)
+	}
+	for _, choice := range s.Choices {
+		choice.collect(c)
+	}
+}
+
+func (s Choice) collect(c *collector) {
+	for _, element := range s.Elements {
+		element.collect(c)
+	}
+}
+
+func (e Element) collect(c *collector) {
+	if e.ComplexType != nil {
+		if e.ComplexType.Name == "" {
+			e.ComplexType.Name = e.Name
+		}
+		e.ComplexType.collect(c)
+	}
+	if e.MaxOccurs == "unbounded" {
+		if e.GoType() != "" {
+			c.needPlural(e.GoType())
+		} else {
+			c.needPlural(e.GoName())
+		}
 	}
 }
 
@@ -25,14 +134,15 @@ func (t ComplexType) Gen(w io.Writer) {
 	for _, seq := range t.Sequences {
 		seq.Gen(w, false)
 	}
+	for _, choice := range t.Choices {
+		choice.Gen(w, false)
+	}
 	p(w, "}")
-	pluralName := inflect.Pluralize(t.GoName())
-	p(w, "type ", pluralName, " []", t.GoName())
 	p(w, "")
 }
 
 func (t ComplexType) GoName() string {
-	return snakeToCamel(t.Name)
+	return goType(t.Name)
 }
 
 func p(w io.Writer, v ...interface{}) {
@@ -49,7 +159,10 @@ func (a Attribute) GoName() string {
 }
 
 func (a Attribute) GoType() string {
-	return a.Type
+	if a.Type != "" {
+		return goType(a.Type)
+	}
+	return goType(a.SimpleType.Restriction.Base)
 }
 
 func (s Sequence) Gen(w io.Writer, plural bool) {
@@ -74,12 +187,15 @@ func (c Choice) Gen(w io.Writer, plural bool) {
 }
 
 func (e Element) Gen(w io.Writer, plural bool) {
-	if e.Type == "" {
+	if e.MaxOccurs == "unbounded" {
+		plural = true
+	}
+	if e.GoType() == "" {
 		e.Type = e.Name
 		defer func() { e.Type = "" }()
 	}
 	if plural {
-		pluralName := inflect.Pluralize(e.GoName())
+		pluralName := inflect.Pluralize(e.GoType())
 		p(w, pluralName, " ", pluralName, " `xml:\"", e.Name, "\"`")
 	} else {
 		p(w, e.GoName(), " ", e.GoType(), " `xml:\"", e.Name, "\"`")
@@ -91,7 +207,15 @@ func (e Element) GoName() string {
 }
 
 func (e Element) GoType() string {
-	return snakeToCamel(e.Type)
+	return goType(e.Type)
+}
+
+func trimNamespace(s string) string {
+	m := strings.Split(s, ":")
+	if len(m) == 2 {
+		return m[1]
+	}
+	return s
 }
 
 func snakeToCamel(s string) string {
@@ -100,4 +224,19 @@ func snakeToCamel(s string) string {
 		ss[i] = strings.Title(ss[i])
 	}
 	return strings.Join(ss, "")
+}
+
+func goType(s string) string {
+	s = trimNamespace(s)
+	switch s {
+	case "integer":
+		return "int"
+	case "boolean":
+		return "bool"
+	case "string":
+		return s
+	}
+	s = strings.TrimSuffix(s, "Type")
+	s = strings.TrimSuffix(s, "type")
+	return snakeToCamel(s)
 }

@@ -34,6 +34,7 @@ type SimpleType struct {
 }
 
 type Restriction struct {
+	Base string `xml:"base,attr"`
 }
 
 type List struct {
@@ -55,17 +56,21 @@ type ComplexType struct {
 type ComplexTypes []ComplexType
 
 type Attribute struct {
-	Id   string `xml:"id,attr"`
-	Name string `xml:"name,attr"`
-	Type string `xml:"type,attr"`
-	Use  string `xml:"use,attr"`
+	Id         string      `xml:"id,attr"`
+	Name       string      `xml:"name,attr"`
+	Type       string      `xml:"type,attr"`
+	Use        string      `xml:"use,attr"`
+	SimpleType *SimpleType `xml:"simpleType"`
 }
 type Attributes []Attribute
 
 type Element struct {
-	Id   string `xml:"id,attr"`
-	Name string `xml:"name,attr"`
-	Type string `xml:"type,attr"`
+	Id          string       `xml:"id,attr"`
+	Name        string       `xml:"name,attr"`
+	Type        string       `xml:"type,attr"`
+	ComplexType *ComplexType `xml:"complexType"`
+	MinOccurs   string       `xml:"minOccurs,attr"`
+	MaxOccurs   string       `xml:"maxOccurs,attr"`
 }
 
 type Choice struct {
