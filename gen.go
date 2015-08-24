@@ -38,6 +38,9 @@ func (t pluralType) Gen(w io.Writer) {
 
 func (t ComplexType) Gen(w io.Writer) {
 	p(w, "type ", t.GoName(), " struct {")
+	if t.SimpleContent != nil {
+		t.SimpleContent.Gen(w, t.GoName())
+	}
 	for _, attr := range t.Attributes {
 		attr.Gen(w, t.GoName())
 	}
@@ -47,14 +50,15 @@ func (t ComplexType) Gen(w io.Writer) {
 	for _, choice := range t.Choices {
 		choice.Gen(w, false)
 	}
-	if t.SimpleContent != nil {
-		t.SimpleContent.Gen(w, t.GoName())
-	}
 	p(w, "}")
 	p(w, "")
 }
 
 func (s *SimpleContent) Gen(w io.Writer, namespace string) {
+	switch goType(s.Extension.Base) {
+	case "string":
+		p(w, "Value string `xml:\",chardata\"`")
+	}
 	for _, attr := range s.Extension.Attributes {
 		attr.Gen(w, namespace)
 	}

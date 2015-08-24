@@ -88,7 +88,7 @@ func (r *Restriction) collect(c *collector, namespace string) {
 		case "NMTOKEN":
 			t.Type = "string"
 			for _, enum := range r.Enumerations {
-				t.KV = append(t.KV, KV{Key: enum.Value, Value: strconv.Quote(enum.Value)})
+				t.KV = append(t.KV, KV{Key: snakeToCamel(enum.Value), Value: strconv.Quote(enum.Value)})
 			}
 		}
 		c.add(t)

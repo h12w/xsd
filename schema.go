@@ -67,6 +67,7 @@ type SimpleContent struct {
 }
 
 type Extension struct {
+	Base       string     `xml:"base,attr"`
 	Attributes Attributes `xml:"attribute"`
 }
 
