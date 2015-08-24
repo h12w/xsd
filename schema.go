@@ -87,6 +87,7 @@ type Element struct {
 	ComplexType *ComplexType `xml:"complexType"`
 	MinOccurs   string       `xml:"minOccurs,attr"`
 	MaxOccurs   string       `xml:"maxOccurs,attr"`
+	Annotation  Annotation   `xml:"annotation"`
 }
 
 type Choice struct {
@@ -125,4 +126,5 @@ type Notation struct {
 }
 
 type Annotation struct {
+	Documentation string `xml:"documentation"`
 }

@@ -122,16 +122,20 @@ func (e Element) Gen(w io.Writer, plural bool) {
 		e.Type = e.Name
 		defer func() { e.Type = "" }()
 	}
+	comment := ""
+	if e.Annotation.Documentation != "" {
+		comment = "// " + e.Annotation.Documentation
+	}
 	if plural {
 		pluralName := inflect.Pluralize(e.GoName())
 		pluralType := inflect.Pluralize(e.GoType())
-		p(w, pluralName, " ", pluralType, " `xml:\"", e.Name, omitempty+"\"`")
+		p(w, pluralName, " ", pluralType, " `xml:\"", e.Name, omitempty+"\"`"+comment)
 	} else {
 		typ := e.GoType()
 		if e.MinOccurs == "0" {
 			typ = omitType(typ)
 		}
-		p(w, e.GoName(), " ", typ, " `xml:\"", e.Name, omitempty+"\"`")
+		p(w, e.GoName(), " ", typ, " `xml:\"", e.Name, omitempty+"\"`"+comment)
 	}
 }
 
