@@ -160,7 +160,11 @@ func p(w io.Writer, v ...interface{}) {
 }
 
 func (a Attribute) Gen(w io.Writer) {
-	p(w, a.GoName(), " ", a.GoType(), " `xml:\"", a.Name, ",attr\"`")
+	omitempty := ""
+	if a.Use == "optional" {
+		omitempty = ",omitempty"
+	}
+	p(w, a.GoName(), " ", a.GoType(), " `xml:\"", a.Name, ",attr"+omitempty+"\"`")
 }
 
 func (a Attribute) GoName() string {
