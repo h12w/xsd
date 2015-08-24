@@ -72,6 +72,11 @@ func (a Attribute) Gen(w io.Writer, namespace string) {
 		omitempty = ",omitempty"
 		typ = omitType(typ)
 	}
+
+	if a.Annotation.Documentation != "" {
+		p(w, "")
+		p(w, "// "+strings.Replace(a.Annotation.Documentation, "\n", " ", -1))
+	}
 	p(w, a.GoName(), " ", typ, " `xml:\"", a.Name, ",attr"+omitempty+"\"`")
 }
 
@@ -122,20 +127,20 @@ func (e Element) Gen(w io.Writer, plural bool) {
 		e.Type = e.Name
 		defer func() { e.Type = "" }()
 	}
-	comment := ""
 	if e.Annotation.Documentation != "" {
-		comment = "// " + e.Annotation.Documentation
+		p(w, "")
+		p(w, "// "+e.Annotation.Documentation)
 	}
 	if plural {
 		pluralName := inflect.Pluralize(e.GoName())
 		pluralType := inflect.Pluralize(e.GoType())
-		p(w, pluralName, " ", pluralType, " `xml:\"", e.Name, omitempty+"\"`"+comment)
+		p(w, pluralName, " ", pluralType, " `xml:\"", e.Name, omitempty+"\"`")
 	} else {
 		typ := e.GoType()
 		if e.MinOccurs == "0" {
 			typ = omitType(typ)
 		}
-		p(w, e.GoName(), " ", typ, " `xml:\"", e.Name, omitempty+"\"`"+comment)
+		p(w, e.GoName(), " ", typ, " `xml:\"", e.Name, omitempty+"\"`")
 	}
 }
 
