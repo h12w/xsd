@@ -88,7 +88,7 @@ func (a Attribute) Gen(w io.Writer) {
 	typ := a.GoType()
 	if a.Use == "optional" {
 		omitempty = ",omitempty"
-		typ = "*" + typ
+		typ = omitType(typ)
 	}
 	p(w, a.GoName(), " ", typ, " `xml:\"", a.Name, ",attr"+omitempty+"\"`")
 }
@@ -143,7 +143,7 @@ func (e Element) Gen(w io.Writer, plural bool) {
 	} else {
 		typ := e.GoType()
 		if e.MinOccurs == "0" {
-			typ = "*" + typ
+			typ = omitType(typ)
 		}
 		p(w, e.GoName(), " ", typ, " `xml:\"", e.Name, omitempty+"\"`")
 	}
@@ -171,6 +171,14 @@ func snakeToCamel(s string) string {
 		ss[i] = strings.Title(ss[i])
 	}
 	return strings.Join(ss, "")
+}
+
+func omitType(s string) string {
+	switch s {
+	case "int", "string", "bool":
+		return s
+	}
+	return "*" + s
 }
 
 func goType(s string) string {
