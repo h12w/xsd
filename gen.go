@@ -137,8 +137,17 @@ func (t ComplexType) Gen(w io.Writer) {
 	for _, choice := range t.Choices {
 		choice.Gen(w, false)
 	}
+	if t.SimpleContent != nil {
+		t.SimpleContent.Gen(w)
+	}
 	p(w, "}")
 	p(w, "")
+}
+
+func (s *SimpleContent) Gen(w io.Writer) {
+	for _, attr := range s.Extension.Attributes {
+		attr.Gen(w)
+	}
 }
 
 func (t ComplexType) GoName() string {

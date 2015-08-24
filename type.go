@@ -52,8 +52,17 @@ type ComplexType struct {
 	Sequences       []Sequence       `xml:"sequence"`
 	Attributes      Attributes       `xml:"attribute"`
 	AttributeGroups []AttributeGroup `xml:"attributeGroup"`
+	SimpleContent   *SimpleContent   `xml:"simpleContent"`
 }
 type ComplexTypes []ComplexType
+
+type SimpleContent struct {
+	Extension Extension `xml:"extension"`
+}
+
+type Extension struct {
+	Attributes Attributes `xml:"attribute"`
+}
 
 type Attribute struct {
 	Id         string      `xml:"id,attr"`
