@@ -24,3 +24,17 @@ func (t pluralType) TypeName() string {
 func (t ComplexType) TypeName() string {
 	return t.GoName()
 }
+
+type enumType struct {
+	Name string
+	Type string
+	KV   []KV
+}
+type KV struct {
+	Key   string
+	Value string
+}
+
+func (t *enumType) TypeName() string {
+	return t.Name
+}

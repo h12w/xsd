@@ -34,7 +34,13 @@ type SimpleType struct {
 }
 
 type Restriction struct {
-	Base string `xml:"base,attr"`
+	Base         string       `xml:"base,attr"`
+	Enumerations Enumerations `xml:"enumeration"`
+}
+
+type Enumerations []Enumeration
+type Enumeration struct {
+	Value string `xml:"value,attr"`
 }
 
 type List struct {

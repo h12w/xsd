@@ -22,6 +22,15 @@ func (s *Schema) Gen(w io.Writer) {
 	}
 }
 
+func (t *enumType) Gen(w io.Writer) {
+	fmt.Fprintf(w, "type %s %s\n", t.Name, t.Type)
+	fmt.Fprintln(w, "const (")
+	for _, kv := range t.KV {
+		fmt.Fprintf(w, "%s %s = %s\n", kv.Key, t.Name, kv.Value)
+	}
+	fmt.Fprintln(w, ")")
+}
+
 func (t pluralType) Gen(w io.Writer) {
 	p(w, "type ", t.Name, " []", t.Type)
 	p(w)
@@ -30,7 +39,7 @@ func (t pluralType) Gen(w io.Writer) {
 func (t ComplexType) Gen(w io.Writer) {
 	p(w, "type ", t.GoName(), " struct {")
 	for _, attr := range t.Attributes {
-		attr.Gen(w)
+		attr.Gen(w, t.GoName())
 	}
 	for _, seq := range t.Sequences {
 		seq.Gen(w, false)
@@ -39,15 +48,15 @@ func (t ComplexType) Gen(w io.Writer) {
 		choice.Gen(w, false)
 	}
 	if t.SimpleContent != nil {
-		t.SimpleContent.Gen(w)
+		t.SimpleContent.Gen(w, t.GoName())
 	}
 	p(w, "}")
 	p(w, "")
 }
 
-func (s *SimpleContent) Gen(w io.Writer) {
+func (s *SimpleContent) Gen(w io.Writer, namespace string) {
 	for _, attr := range s.Extension.Attributes {
-		attr.Gen(w)
+		attr.Gen(w, namespace)
 	}
 }
 
@@ -55,9 +64,9 @@ func (t ComplexType) GoName() string {
 	return goType(t.Name)
 }
 
-func (a Attribute) Gen(w io.Writer) {
+func (a Attribute) Gen(w io.Writer, namespace string) {
 	omitempty := ""
-	typ := a.GoType()
+	typ := a.GoType(namespace)
 	if a.Use == "optional" {
 		omitempty = ",omitempty"
 		typ = omitType(typ)
@@ -69,9 +78,12 @@ func (a Attribute) GoName() string {
 	return snakeToCamel(a.Name)
 }
 
-func (a Attribute) GoType() string {
+func (a Attribute) GoType(namespace string) string {
 	if a.Type != "" {
 		return goType(a.Type)
+	}
+	if goType(a.SimpleType.Restriction.Base) == "NMTOKEN" {
+		return namespace + a.GoName()
 	}
 	return goType(a.SimpleType.Restriction.Base)
 }

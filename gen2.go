@@ -5,9 +5,10 @@
 package xsd
 
 import (
-	"bitbucket.org/pkg/inflect"
 	"io"
 	"sort"
+
+	"bitbucket.org/pkg/inflect"
 )
 
 func (s ComplexTypes) Len() int {
@@ -83,9 +84,9 @@ func (a Attribute) GoName2() string {
 
 func (a Attribute) GenStruct(w io.Writer) {
 	p(w, "type ", a.GoName2(), " struct {")
-	p(w, a.GoName(), "_ ", a.GoType(), " `xml:\"", a.Name, ",attr\"`")
+	p(w, a.GoName(), "_ ", a.GoType(""), " `xml:\"", a.Name, ",attr\"`")
 	p(w, "}")
-	p(w, "func (s ", a.GoName2(), ")", a.GoName(), "()", a.GoType(), "{")
+	p(w, "func (s ", a.GoName2(), ")", a.GoName(), "()", a.GoType(""), "{")
 	p(w, "return s.", a.GoName(), "_")
 	p(w, "}")
 }
