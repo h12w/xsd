@@ -55,10 +55,7 @@ func (t ComplexType) Gen(w io.Writer) {
 }
 
 func (s *SimpleContent) Gen(w io.Writer, namespace string) {
-	switch goType(s.Extension.Base) {
-	case "string":
-		p(w, "Value string `xml:\",chardata\"`")
-	}
+	p(w, "Value ", goType(s.Extension.Base), " `xml:\",chardata\"`")
 	for _, attr := range s.Extension.Attributes {
 		attr.Gen(w, namespace)
 	}
@@ -178,7 +175,9 @@ func goType(s string) string {
 	case "boolean":
 		return "bool"
 	case "string":
-		return s
+		return "string"
+	case "decimal":
+		return "float32"
 	}
 	s = strings.TrimSuffix(s, "Type")
 	s = strings.TrimSuffix(s, "type")
