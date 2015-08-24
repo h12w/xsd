@@ -126,8 +126,9 @@ func (e Element) Gen(w io.Writer, plural bool) {
 		defer func() { e.Type = "" }()
 	}
 	if plural {
-		pluralName := inflect.Pluralize(e.GoType())
-		p(w, pluralName, " ", pluralName, " `xml:\"", e.Name, omitempty+"\"`")
+		pluralName := inflect.Pluralize(e.GoName())
+		pluralType := inflect.Pluralize(e.GoType())
+		p(w, pluralName, " ", pluralType, " `xml:\"", e.Name, omitempty+"\"`")
 	} else {
 		typ := e.GoType()
 		if e.MinOccurs == "0" {
