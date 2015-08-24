@@ -23,32 +23,6 @@ func (a Types) Len() int           { return len(a) }
 func (a Types) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a Types) Less(i, j int) bool { return a[i].TypeName() < a[j].TypeName() }
 
-type collector struct {
-	set   map[string]bool
-	types Types
-}
-
-func newCollector() *collector {
-	return &collector{
-		make(map[string]bool),
-		nil,
-	}
-}
-
-func (c *collector) add(t Type) {
-	if !c.set[t.TypeName()] {
-		c.types = append(c.types, t)
-		c.set[t.TypeName()] = true
-	}
-}
-
-func (c *collector) needPlural(name string) {
-	c.add(pluralType{
-		Name: inflect.Pluralize(name),
-		Type: name,
-	})
-}
-
 func (s *Schema) Gen(w io.Writer) {
 	c := newCollector()
 	s.collect(c)
@@ -56,25 +30,6 @@ func (s *Schema) Gen(w io.Writer) {
 	for _, t := range c.types {
 		t.Gen(w)
 	}
-}
-
-func (s *Schema) collect(c *collector) {
-	for _, element := range s.Elements {
-		element.collect(c)
-	}
-	for _, complexType := range s.ComplexTypes {
-		complexType.collect(c)
-	}
-}
-
-func (t ComplexType) collect(c *collector) {
-	for _, sequence := range t.Sequences {
-		sequence.collect(c)
-	}
-	for _, choice := range t.Choices {
-		choice.collect(c)
-	}
-	c.add(t)
 }
 
 type pluralType struct {
@@ -93,37 +48,6 @@ func (t ComplexType) TypeName() string {
 func (t pluralType) Gen(w io.Writer) {
 	p(w, "type ", t.Name, " []", t.Type)
 	p(w)
-}
-
-func (s Sequence) collect(c *collector) {
-	for _, element := range s.Elements {
-		element.collect(c)
-	}
-	for _, choice := range s.Choices {
-		choice.collect(c)
-	}
-}
-
-func (s Choice) collect(c *collector) {
-	for _, element := range s.Elements {
-		element.collect(c)
-	}
-}
-
-func (e Element) collect(c *collector) {
-	if e.ComplexType != nil {
-		if e.ComplexType.Name == "" {
-			e.ComplexType.Name = e.Name
-		}
-		e.ComplexType.collect(c)
-	}
-	if e.MaxOccurs == "unbounded" {
-		if e.GoType() != "" {
-			c.needPlural(e.GoType())
-		} else {
-			c.needPlural(e.GoName())
-		}
-	}
 }
 
 func (t ComplexType) Gen(w io.Writer) {
@@ -161,10 +85,12 @@ func p(w io.Writer, v ...interface{}) {
 
 func (a Attribute) Gen(w io.Writer) {
 	omitempty := ""
+	typ := a.GoType()
 	if a.Use == "optional" {
 		omitempty = ",omitempty"
+		typ = "*" + typ
 	}
-	p(w, a.GoName(), " ", a.GoType(), " `xml:\"", a.Name, ",attr"+omitempty+"\"`")
+	p(w, a.GoName(), " ", typ, " `xml:\"", a.Name, ",attr"+omitempty+"\"`")
 }
 
 func (a Attribute) GoName() string {
@@ -200,6 +126,10 @@ func (c Choice) Gen(w io.Writer, plural bool) {
 }
 
 func (e Element) Gen(w io.Writer, plural bool) {
+	omitempty := ""
+	if e.MinOccurs == "0" {
+		omitempty = ",omitempty"
+	}
 	if e.MaxOccurs == "unbounded" {
 		plural = true
 	}
@@ -209,9 +139,13 @@ func (e Element) Gen(w io.Writer, plural bool) {
 	}
 	if plural {
 		pluralName := inflect.Pluralize(e.GoType())
-		p(w, pluralName, " ", pluralName, " `xml:\"", e.Name, "\"`")
+		p(w, pluralName, " ", pluralName, " `xml:\"", e.Name, omitempty+"\"`")
 	} else {
-		p(w, e.GoName(), " ", e.GoType(), " `xml:\"", e.Name, "\"`")
+		typ := e.GoType()
+		if e.MinOccurs == "0" {
+			typ = "*" + typ
+		}
+		p(w, e.GoName(), " ", typ, " `xml:\"", e.Name, omitempty+"\"`")
 	}
 }
 
