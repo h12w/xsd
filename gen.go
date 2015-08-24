@@ -13,16 +13,6 @@ import (
 	"bitbucket.org/pkg/inflect"
 )
 
-type Type interface {
-	TypeName() string
-	Gen(w io.Writer)
-}
-type Types []Type
-
-func (a Types) Len() int           { return len(a) }
-func (a Types) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a Types) Less(i, j int) bool { return a[i].TypeName() < a[j].TypeName() }
-
 func (s *Schema) Gen(w io.Writer) {
 	c := newCollector()
 	s.collect(c)
@@ -30,19 +20,6 @@ func (s *Schema) Gen(w io.Writer) {
 	for _, t := range c.types {
 		t.Gen(w)
 	}
-}
-
-type pluralType struct {
-	Name string
-	Type string
-}
-
-func (t pluralType) TypeName() string {
-	return t.Name
-}
-
-func (t ComplexType) TypeName() string {
-	return t.GoName()
 }
 
 func (t pluralType) Gen(w io.Writer) {
@@ -76,11 +53,6 @@ func (s *SimpleContent) Gen(w io.Writer) {
 
 func (t ComplexType) GoName() string {
 	return goType(t.Name)
-}
-
-func p(w io.Writer, v ...interface{}) {
-	fmt.Fprint(w, v...)
-	fmt.Fprintln(w)
 }
 
 func (a Attribute) Gen(w io.Writer) {
@@ -194,4 +166,9 @@ func goType(s string) string {
 	s = strings.TrimSuffix(s, "Type")
 	s = strings.TrimSuffix(s, "type")
 	return snakeToCamel(s)
+}
+
+func p(w io.Writer, v ...interface{}) {
+	fmt.Fprint(w, v...)
+	fmt.Fprintln(w)
 }
