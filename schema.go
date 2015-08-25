@@ -59,6 +59,7 @@ type ComplexType struct {
 	Attributes      Attributes       `xml:"attribute"`
 	AttributeGroups []AttributeGroup `xml:"attributeGroup"`
 	SimpleContent   *SimpleContent   `xml:"simpleContent"`
+	Annotation      Annotation       `xml:"annotation"`
 }
 type ComplexTypes []ComplexType
 

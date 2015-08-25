@@ -115,6 +115,9 @@ func (e Element) collect(c *collector) {
 		if e.ComplexType.Name == "" {
 			e.ComplexType.Name = e.Name
 		}
+		if e.ComplexType.Annotation.Documentation == "" {
+			e.ComplexType.Annotation = e.Annotation
+		}
 		e.ComplexType.collect(c, e.GoName())
 	}
 	if e.MaxOccurs == "unbounded" {

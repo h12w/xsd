@@ -37,6 +37,13 @@ func (t pluralType) Gen(w io.Writer) {
 }
 
 func (t ComplexType) Gen(w io.Writer) {
+	if doc := t.Annotation.Documentation; doc != "" {
+		doc = strings.Replace(doc, "\n", " ", -1)
+		if !strings.HasPrefix(doc, t.GoName()) {
+			doc = t.GoName() + " is " + doc
+		}
+		p(w, "// "+doc)
+	}
 	p(w, "type ", t.GoName(), " struct {")
 	if t.SimpleContent != nil {
 		t.SimpleContent.Gen(w, t.GoName())
