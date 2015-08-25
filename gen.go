@@ -145,7 +145,7 @@ func (e Element) Gen(w io.Writer, plural bool) {
 	}
 	if plural {
 		pluralName := inflect.Pluralize(e.GoName())
-		pluralType := inflect.Pluralize(e.GoType())
+		pluralType := "[]" + e.GoType()
 		p(w, pluralName, " ", pluralType, " `xml:\"", e.Name, omitempty+"\"`")
 	} else {
 		typ := e.GoType()

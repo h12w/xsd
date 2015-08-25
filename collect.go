@@ -34,7 +34,7 @@ func (c *collector) needPlural(name string) {
 
 func (s *Schema) collect(c *collector) {
 	for _, element := range s.Elements {
-		element.collect(c)
+		element.collect(c, "")
 	}
 	for _, complexType := range s.ComplexTypes {
 		complexType.collect(c, "")
@@ -43,10 +43,10 @@ func (s *Schema) collect(c *collector) {
 
 func (t ComplexType) collect(c *collector, namespace string) {
 	for _, sequence := range t.Sequences {
-		sequence.collect(c)
+		sequence.collect(c, namespace)
 	}
 	for _, choice := range t.Choices {
-		choice.collect(c)
+		choice.collect(c, namespace)
 	}
 	if t.SimpleContent != nil {
 		t.SimpleContent.collect(c, namespace)
@@ -95,22 +95,22 @@ func (r *Restriction) collect(c *collector, namespace string) {
 	}
 }
 
-func (s Sequence) collect(c *collector) {
+func (s Sequence) collect(c *collector, namespace string) {
 	for _, element := range s.Elements {
-		element.collect(c)
+		element.collect(c, namespace)
 	}
 	for _, choice := range s.Choices {
-		choice.collect(c)
+		choice.collect(c, namespace)
 	}
 }
 
-func (s Choice) collect(c *collector) {
+func (s Choice) collect(c *collector, namespace string) {
 	for _, element := range s.Elements {
-		element.collect(c)
+		element.collect(c, namespace)
 	}
 }
 
-func (e Element) collect(c *collector) {
+func (e Element) collect(c *collector, namespace string) {
 	if e.ComplexType != nil {
 		if e.ComplexType.Name == "" {
 			e.ComplexType.Name = e.Name
@@ -120,11 +120,15 @@ func (e Element) collect(c *collector) {
 		}
 		e.ComplexType.collect(c, e.GoName())
 	}
-	if e.MaxOccurs == "unbounded" {
-		if e.GoType() != "" {
-			c.needPlural(e.GoType())
-		} else {
-			c.needPlural(e.GoName())
+	/*
+		if e.MaxOccurs == "unbounded" {
+			typ := e.GoType()
+			if e.GoType() == "" {
+				typ = e.GoName()
+			}
+			if inflect.Pluralize(typ) != namespace {
+				c.needPlural(typ)
+			}
 		}
-	}
+	*/
 }
