@@ -33,11 +33,11 @@ func (c *collector) needPlural(name string) {
 }
 
 func (s *Schema) collect(c *collector) {
-	for _, element := range s.Elements {
-		element.collect(c, "")
-	}
 	for _, complexType := range s.ComplexTypes {
 		complexType.collect(c, "")
+	}
+	for _, element := range s.Elements {
+		element.collect(c, "")
 	}
 }
 

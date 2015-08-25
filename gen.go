@@ -17,8 +17,8 @@ func (s *Schema) Gen(w io.Writer) {
 	c := newCollector()
 	s.collect(c)
 	sort.Sort(c.types)
-	for _, t := range c.types {
-		t.Gen(w)
+	for _, typ := range c.types {
+		typ.Gen(w)
 	}
 }
 
@@ -36,9 +36,17 @@ func (t pluralType) Gen(w io.Writer) {
 	p(w)
 }
 
+func cleanDoc(s string) string {
+	ss := strings.Split(s, "\n")
+	for i := range ss {
+		ss[i] = strings.TrimSpace(ss[i])
+	}
+	return strings.Join(ss, " ")
+}
+
 func (t ComplexType) Gen(w io.Writer) {
 	if doc := t.Annotation.Documentation; doc != "" {
-		doc = strings.Replace(doc, "\n", " ", -1)
+		doc = cleanDoc(doc)
 		if !strings.HasPrefix(doc, t.GoName()) {
 			doc = t.GoName() + " is " + doc
 		}
@@ -87,7 +95,8 @@ func (a Attribute) Gen(w io.Writer, namespace string) {
 
 	if a.Annotation.Documentation != "" {
 		p(w, "")
-		p(w, "// "+strings.Replace(a.Annotation.Documentation, "\n", " ", -1))
+		doc := cleanDoc(a.Annotation.Documentation)
+		p(w, "// "+doc)
 	}
 	p(w, a.GoName(), " ", typ, " `xml:\"", a.Name, ",attr"+omitempty+"\"`")
 }
