@@ -191,7 +191,7 @@ func snakeToCamel(s string) string {
 
 func omitType(s string) string {
 	switch s {
-	case "int", "string", "bool", "AnyURI":
+	case "int", "string", "bool":
 		return s
 	}
 	return "*" + s
