@@ -71,11 +71,7 @@ func (t ComplexType) Gen(w io.Writer) {
 
 func (s *SimpleContent) Gen(w io.Writer, namespace string) {
 	typ := goType(s.Extension.Base)
-	if typ == "AnyURI" {
-		p(w, "Value []byte `xml:\",innerxml\"`")
-	} else {
-		p(w, "Value ", typ, " `xml:\",chardata\"`")
-	}
+	p(w, "Value ", typ, " `xml:\",chardata\"`")
 	for _, attr := range s.Extension.Attributes {
 		attr.Gen(w, namespace)
 	}
