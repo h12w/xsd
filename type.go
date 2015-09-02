@@ -2,12 +2,10 @@ package xsd
 
 import (
 	"go/ast"
-	"io"
 )
 
 type Type interface {
 	TypeName() string
-	Gen(w io.Writer)
 	Decls() []ast.Decl
 }
 type Types []Type
