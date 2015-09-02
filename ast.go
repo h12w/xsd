@@ -17,9 +17,11 @@ func (s *Schema) Ast(name string) *ast.File {
 	c := newCollector()
 	s.collect(c)
 	sort.Sort(c.types)
+	var decls []ast.Decl
 	for _, typ := range c.types {
-		f.Decls = append(f.Decls, typ.Decls()...)
+		decls = append(decls, typ.Decls()...)
 	}
+	f.Decls = elevateSubArrays(decls)
 	return f
 }
 
