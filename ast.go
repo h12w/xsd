@@ -32,6 +32,7 @@ func (t *enumType) Decls() []ast.Decl {
 				Type: &ast.Ident{Name: t.Type},
 			},
 		},
+		Doc: comment(t.Doc),
 	}
 
 	constDecl := &ast.GenDecl{

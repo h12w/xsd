@@ -69,20 +69,21 @@ func (e *Extension) collect(c *collector, namespace string) {
 
 func (a *Attribute) collect(c *collector, namespace string) {
 	if a.SimpleType != nil {
-		a.SimpleType.collect(c, namespace+a.GoName())
+		a.SimpleType.collect(c, namespace+a.GoName(), a.Annotation.Documentation)
 	}
 }
 
-func (s *SimpleType) collect(c *collector, namespace string) {
+func (s *SimpleType) collect(c *collector, namespace, doc string) {
 	if s.Restriction != nil {
-		s.Restriction.collect(c, namespace)
+		s.Restriction.collect(c, namespace, doc)
 	}
 }
 
-func (r *Restriction) collect(c *collector, namespace string) {
+func (r *Restriction) collect(c *collector, namespace, doc string) {
 	if len(r.Enumerations) > 0 {
 		t := &enumType{
 			Name: namespace,
+			Doc:  doc,
 		}
 		switch goType(r.Base) {
 		case "NMTOKEN":

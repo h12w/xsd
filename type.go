@@ -31,6 +31,7 @@ type enumType struct {
 	Name string
 	Type string
 	KV   []KV
+	Doc  string
 }
 type KV struct {
 	Key   string
