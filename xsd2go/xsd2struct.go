@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
+	"go/printer"
+	"go/token"
+	"log"
 	"os"
 
 	"h12.me/xsd"
@@ -14,13 +17,14 @@ func main() {
 	}
 	pkg := os.Args[1]
 	files := os.Args[2:]
-	fmt.Println("package", pkg)
 	for _, file := range files {
-		gen(file)
+		if err := gen(pkg, file); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-func gen(file string) {
+func gen(pkg, file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		panic(err)
@@ -30,6 +34,6 @@ func gen(file string) {
 	if err := xml.NewDecoder(f).Decode(&s); err != nil {
 		panic(err)
 	}
-	s.Gen(os.Stdout)
-	fmt.Println()
+	astFile := s.Ast(pkg)
+	return printer.Fprint(os.Stdout, token.NewFileSet(), astFile)
 }
