@@ -65,6 +65,9 @@ func (t ComplexType) Decls() []ast.Decl {
 			doc = t.GoName() + " is " + doc
 		}
 	}
+	if doc == "" {
+		doc = " "
+	}
 	var fields []*ast.Field
 	if t.SimpleContent != nil {
 		fields = append(fields, t.SimpleContent.Fields(t.GoName())...)
@@ -187,12 +190,12 @@ func comment(doc string) *ast.CommentGroup {
 	if doc == "" {
 		return nil
 	}
-	return &ast.CommentGroup{List: []*ast.Comment{{Text: "\n// " + doc}}}
+	return &ast.CommentGroup{List: []*ast.Comment{{Text: "\n// " + doc, Slash: 1}}}
 }
 
 func tag(name, value string) *ast.BasicLit {
 	if value == "" {
 		return nil
 	}
-	return &ast.BasicLit{Kind: token.STRING, Value: fmt.Sprintf("`%s:\"%s\"`", name, value)}
+	return &ast.BasicLit{Kind: token.STRING, Value: fmt.Sprintf("`%s:\"%s\"`\n", name, value)}
 }

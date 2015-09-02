@@ -38,9 +38,16 @@ func TestCheck(t *testing.T) {
 	src := `
 package main
 
-// T is a type T
+// T comment
 type T struct {
-	S string
+	// S1 comment
+	S1 string
+
+	// S2 comment
+	S2 string
+
+	// S3 comment
+	S3 string
 }
 
 // E is a type E
@@ -53,12 +60,11 @@ const (
 
 	// Create the AST by parsing src.
 	fset := token.NewFileSet() // positions are relative to fset
-	f, err := parser.ParseFile(fset, "", src, 0)
+	f, err := parser.ParseFile(fset, "", src, parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}
 
-	// Print the AST.
 	ast.Print(fset, f)
 }
 
