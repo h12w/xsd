@@ -67,6 +67,22 @@ func TestGen(t *testing.T) {
 		Name: &ast.Ident{Name: "vast"},
 		Decls: []ast.Decl{
 			&ast.GenDecl{
+				Tok:    token.CONST,
+				Lparen: 1,
+				Specs: []ast.Spec{
+					&ast.ValueSpec{
+						Names:  []*ast.Ident{{Name: "A"}},
+						Type:   &ast.Ident{Name: "int"},
+						Values: []ast.Expr{&ast.BasicLit{Kind: token.INT, Value: "1"}},
+					},
+					&ast.ValueSpec{
+						Names:  []*ast.Ident{{Name: "B"}},
+						Type:   &ast.Ident{Name: "int"},
+						Values: []ast.Expr{&ast.BasicLit{Kind: token.INT, Value: "2"}},
+					},
+				},
+			},
+			&ast.GenDecl{
 				Tok: token.TYPE,
 				Specs: []ast.Spec{
 					&ast.TypeSpec{

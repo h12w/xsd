@@ -35,7 +35,8 @@ func (t *enumType) Decls() []ast.Decl {
 	}
 
 	constDecl := &ast.GenDecl{
-		Tok: token.CONST,
+		Tok:    token.CONST,
+		Lparen: 1,
 	}
 	kind := token.Lookup(t.Type)
 	for _, kv := range t.KV {
