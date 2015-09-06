@@ -62,11 +62,11 @@ func snakeToCamel(s string) string {
 	return strings.Join(ss, "")
 }
 
-var lowerUpper = regexp.MustCompile(`([\P{Lu}])([\p{Lu}])`)
+var upperLower = regexp.MustCompile(`[\p{Lu}][\p{Ll}]`)
 
 // convert name from camel case to snake case
 func camelToSnake(s string) string {
-	return strings.ToLower(lowerUpper.ReplaceAllString(s, `${1}_${2}`))
+	return strings.TrimPrefix(strings.ToLower(upperLower.ReplaceAllString(s, `_${0}`)), "_")
 }
 
 func omitType(s string) string {
