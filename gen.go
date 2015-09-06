@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -59,6 +60,13 @@ func snakeToCamel(s string) string {
 		ss[i] = strings.Title(ss[i])
 	}
 	return strings.Join(ss, "")
+}
+
+var lowerUpper = regexp.MustCompile(`([\P{Lu}])([\p{Lu}])`)
+
+// convert name from camel case to snake case
+func camelToSnake(s string) string {
+	return strings.ToLower(lowerUpper.ReplaceAllString(s, `${1}_${2}`))
 }
 
 func omitType(s string) string {
@@ -135,7 +143,7 @@ func (t XMLTag) String() string {
 	values = append(values, t.Name)
 	switch t.Type {
 	case XMLOmitted:
-		values = append(values, "-")
+		return `xml:"-"`
 	case XMLAttr:
 		values = append(values, "attr")
 	case XMLCharData:
@@ -149,4 +157,29 @@ func (t XMLTag) String() string {
 		values = append(values, "omitempty")
 	}
 	return fmt.Sprintf(`xml:"%s"`, strings.Join(values, ","))
+}
+
+type BSONNodeType int
+
+const (
+	BSONNormal BSONNodeType = iota
+	BSONInline
+	BSONOmitted
+)
+
+type BSONTag struct {
+	Type      BSONNodeType
+	Name      string
+	Omitempty bool
+}
+
+func (t BSONTag) String() string {
+	if t.Type == BSONOmitted {
+		return `bson:"-"`
+	}
+	values := []string{t.Name}
+	if t.Omitempty {
+		values = append(values, "omitempty")
+	}
+	return fmt.Sprintf(`bson:"%s"`, strings.Join(values, ","))
 }

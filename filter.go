@@ -6,6 +6,41 @@ import (
 	"strings"
 )
 
+func addBSONTags(decls []ast.Decl) []ast.Decl {
+	for _, decl := range decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok {
+			continue
+		}
+		if genDecl.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range genDecl.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok {
+				continue
+			}
+			structType, ok := typeSpec.Type.(*ast.StructType)
+			if !ok {
+				continue
+			}
+			for _, field := range structType.Fields.List {
+				xmlTag := ParseXMLTag(field.Tag.Value)
+				name := camelToSnake(field.Names[0].Name)
+				bsonTag := BSONTag{
+					Name:      name,
+					Omitempty: xmlTag.Omitempty,
+				}
+				if xmlTag.Type == XMLOmitted {
+					bsonTag.Type = BSONOmitted
+				}
+				field.Tag = tag(xmlTag.String() + " " + bsonTag.String())
+			}
+		}
+	}
+	return decls
+}
+
 func elevateSubArrays(decls []ast.Decl) []ast.Decl {
 	arrayTypes := make(map[string]*ast.Field)
 	for _, decl := range decls {

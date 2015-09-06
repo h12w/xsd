@@ -20,7 +20,7 @@ func (s *Schema) Ast(name string) *ast.File {
 	for _, typ := range c.types {
 		decls = append(decls, typ.Decls()...)
 	}
-	f.Decls = elevateSubArrays(decls)
+	f.Decls = addBSONTags(elevateSubArrays(decls))
 	return f
 }
 
