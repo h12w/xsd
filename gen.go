@@ -7,6 +7,7 @@ package xsd
 import (
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 )
 
@@ -88,4 +89,64 @@ func goType(s string) string {
 func p(w io.Writer, v ...interface{}) {
 	fmt.Fprint(w, v...)
 	fmt.Fprintln(w)
+}
+
+type XMLNodeType int
+
+const (
+	XMLElement XMLNodeType = iota
+	XMLAttr
+	XMLCharData
+	XMLInnerXML
+	XMLComment
+	XMLOmitted
+)
+
+type XMLTag struct {
+	Type      XMLNodeType
+	Name      string
+	Omitempty bool
+}
+
+func ParseXMLTag(s string) XMLTag {
+	values := strings.Split(reflect.StructTag(strings.Trim(s, "`")).Get("xml"), ",")
+	t := XMLTag{Name: values[0]}
+	for _, value := range values[1:] {
+		switch value {
+		case "-":
+			t.Type = XMLOmitted
+		case "attr":
+			t.Type = XMLAttr
+		case "chardata":
+			t.Type = XMLCharData
+		case "innerxml":
+			t.Type = XMLInnerXML
+		case "comment":
+			t.Type = XMLComment
+		case "omitempty":
+			t.Omitempty = true
+		}
+	}
+	return t
+}
+
+func (t XMLTag) String() string {
+	var values []string
+	values = append(values, t.Name)
+	switch t.Type {
+	case XMLOmitted:
+		values = append(values, "-")
+	case XMLAttr:
+		values = append(values, "attr")
+	case XMLCharData:
+		values = append(values, "chardata")
+	case XMLInnerXML:
+		values = append(values, "innerxml")
+	case XMLComment:
+		values = append(values, "comment")
+	}
+	if t.Omitempty {
+		values = append(values, "omitempty")
+	}
+	return fmt.Sprintf(`xml:"%s"`, strings.Join(values, ","))
 }

@@ -1,7 +1,6 @@
 package xsd
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"sort"
@@ -98,7 +97,7 @@ func (s *SimpleContent) Fields(namespace string) []*ast.Field {
 		&ast.Field{
 			Names: []*ast.Ident{{Name: "Value"}},
 			Type:  &ast.Ident{Name: typ},
-			Tag:   tag("xml", ",chardata"),
+			Tag:   tag(XMLTag{Type: XMLCharData}.String()),
 		},
 	}
 	for _, attr := range s.Extension.Attributes {
@@ -109,9 +108,9 @@ func (s *SimpleContent) Fields(namespace string) []*ast.Field {
 
 func (a Attribute) Field(namespace string) *ast.Field {
 	typ := a.GoType(namespace)
-	omitempty := ""
+	omitempty := false
 	if a.Use == "optional" {
-		omitempty = ",omitempty"
+		omitempty = true
 		typ = omitType(typ)
 	}
 	doc := ""
@@ -121,7 +120,7 @@ func (a Attribute) Field(namespace string) *ast.Field {
 	return &ast.Field{
 		Names: []*ast.Ident{{Name: a.GoName()}},
 		Type:  &ast.Ident{Name: typ},
-		Tag:   tag("xml", a.Name+",attr"+omitempty),
+		Tag:   tag(XMLTag{Name: a.Name, Type: XMLAttr, Omitempty: omitempty}.String()),
 		Doc:   comment(doc),
 	}
 }
@@ -152,9 +151,9 @@ func (c Choice) Fields(plural bool) []*ast.Field {
 }
 
 func (e Element) Field(plural bool) *ast.Field {
-	omitempty := ""
+	omitempty := false
 	if e.MinOccurs == "0" {
-		omitempty = ",omitempty"
+		omitempty = true
 	}
 	if e.MaxOccurs == "unbounded" {
 		plural = true
@@ -173,7 +172,7 @@ func (e Element) Field(plural bool) *ast.Field {
 		return &ast.Field{
 			Names: []*ast.Ident{{Name: pluralName}},
 			Type:  &ast.Ident{Name: pluralType},
-			Tag:   tag("xml", e.Name+omitempty),
+			Tag:   tag(XMLTag{Name: e.Name, Omitempty: omitempty}.String()),
 			Doc:   comment(doc),
 		}
 	}
@@ -184,7 +183,7 @@ func (e Element) Field(plural bool) *ast.Field {
 	return &ast.Field{
 		Names: []*ast.Ident{{Name: e.GoName()}},
 		Type:  &ast.Ident{Name: typ},
-		Tag:   tag("xml", e.Name+omitempty),
+		Tag:   tag(XMLTag{Name: e.Name, Omitempty: omitempty}.String()),
 		Doc:   comment(doc),
 	}
 }
@@ -196,9 +195,9 @@ func comment(doc string) *ast.CommentGroup {
 	return &ast.CommentGroup{List: []*ast.Comment{{Text: "\n// " + doc, Slash: 1}}}
 }
 
-func tag(name, value string) *ast.BasicLit {
+func tag(value string) *ast.BasicLit {
 	if value == "" {
 		return nil
 	}
-	return &ast.BasicLit{Kind: token.STRING, Value: fmt.Sprintf("`%s:\"%s\"`\n", name, value)}
+	return &ast.BasicLit{Kind: token.STRING, Value: "`" + value + "`\n"}
 }

@@ -3,7 +3,6 @@ package xsd
 import (
 	"go/ast"
 	"go/token"
-	"reflect"
 	"strings"
 )
 
@@ -61,14 +60,14 @@ func elevateSubArrays(decls []ast.Decl) []ast.Decl {
 					typeName := typ.Name
 					typeName = strings.TrimPrefix(typeName, "*")
 					if f, ok := arrayTypes[typeName]; ok {
-						oldTags := getXMLTags(field.Tag.Value)
-						newTags := getXMLTags(f.Tag.Value)
+						parentTag := ParseXMLTag(field.Tag.Value)
+						childTag := ParseXMLTag(f.Tag.Value)
 						*field = *f
-						extra := ""
-						if len(oldTags) > 1 {
-							extra = "," + strings.Join(oldTags[1:], ",")
-						}
-						field.Tag = tag("xml", oldTags[0]+">"+newTags[0]+extra)
+						field.Tag = tag(XMLTag{
+							Name:      parentTag.Name + ">" + childTag.Name,
+							Type:      childTag.Type,
+							Omitempty: parentTag.Omitempty || childTag.Omitempty,
+						}.String())
 					}
 				}
 			}
@@ -92,8 +91,4 @@ nextDecl:
 		newDecls = append(newDecls, decl)
 	}
 	return newDecls
-}
-
-func getXMLTags(s string) []string {
-	return strings.Split(reflect.StructTag(strings.Trim(s, "`")).Get("xml"), ",")
 }
