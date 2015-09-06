@@ -25,7 +25,7 @@ func (t ComplexType) GoName() string {
 }
 
 func (a Attribute) GoName() string {
-	return snakeToCamel(a.Name)
+	return goName(a.Name)
 }
 
 func (a Attribute) GoType(namespace string) string {
@@ -39,7 +39,7 @@ func (a Attribute) GoType(namespace string) string {
 }
 
 func (e Element) GoName() string {
-	return snakeToCamel(e.Name)
+	return goName(e.Name)
 }
 
 func (e Element) GoType() string {
@@ -50,6 +50,14 @@ func trimNamespace(s string) string {
 	m := strings.Split(s, ":")
 	if len(m) == 2 {
 		return m[1]
+	}
+	return s
+}
+
+func goName(s string) string {
+	s = snakeToCamel(s)
+	if strings.HasSuffix(s, "Id") {
+		s = strings.TrimSuffix(s, "Id") + "ID"
 	}
 	return s
 }
