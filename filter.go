@@ -27,6 +27,9 @@ func addBSONTags(decls []ast.Decl) []ast.Decl {
 			for _, field := range structType.Fields.List {
 				xmlTag := ParseXMLTag(field.Tag.Value)
 				name := camelToSnake(field.Names[0].Name)
+				if name == "id" {
+					name = "_id"
+				}
 				bsonTag := BSONTag{
 					Name:      name,
 					Omitempty: xmlTag.Omitempty,
