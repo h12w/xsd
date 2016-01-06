@@ -195,3 +195,27 @@ func (t BSONTag) String() string {
 	}
 	return fmt.Sprintf(`bson:"%s"`, strings.Join(values, ","))
 }
+
+type JSONNodeType int
+
+const (
+	JSONNormal JSONNodeType = iota
+	JSONOmitted
+)
+
+type JSONTag struct {
+	Type      JSONNodeType
+	Name      string
+	Omitempty bool
+}
+
+func (t JSONTag) String() string {
+	if t.Type == JSONOmitted {
+		return `json:"-"`
+	}
+	values := []string{t.Name}
+	if t.Omitempty {
+		values = append(values, "omitempty")
+	}
+	return fmt.Sprintf(`json:"%s"`, strings.Join(values, ","))
+}

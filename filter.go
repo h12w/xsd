@@ -30,14 +30,14 @@ func addBSONTags(decls []ast.Decl) []ast.Decl {
 				if name == "id" {
 					name = "_id"
 				}
-				bsonTag := BSONTag{
+				jsonTag := JSONTag{
 					Name:      name,
 					Omitempty: xmlTag.Omitempty,
 				}
 				if xmlTag.Type == XMLOmitted {
-					bsonTag.Type = BSONOmitted
+					jsonTag.Type = JSONOmitted
 				}
-				field.Tag = tag(xmlTag.String() + " " + bsonTag.String())
+				field.Tag = tag(xmlTag.String() + " " + jsonTag.String())
 			}
 		}
 	}
