@@ -20,7 +20,17 @@ func (s *Schema) Ast(name string) *ast.File {
 	for _, typ := range c.types {
 		decls = append(decls, typ.Decls()...)
 	}
-	f.Decls = addBSONTags(elevateSubArrays(decls))
+	f.Decls = []ast.Decl{
+		&ast.GenDecl{
+			Tok: token.IMPORT,
+			Specs: []ast.Spec{
+				&ast.ImportSpec{
+					Path: &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: `"encoding/xml"`},
+				},
+			},
+		},
+	}
+	f.Decls = append(f.Decls, addBSONTags(elevateSubArrays(decls))...)
 	return f
 }
 
@@ -82,6 +92,15 @@ func (t ComplexType) Decls() []ast.Decl {
 	}
 	for _, choice := range t.Choices {
 		fields = append(fields, choice.Fields(false)...)
+	}
+	// general attributes
+	if len(t.Attributes) > 0 || t.SimpleContent != nil {
+		fields = append(fields, &ast.Field{
+			Names: []*ast.Ident{{Name: "Attrs"}},
+			Type:  &ast.Ident{Name: "[]xml.Attr"},
+			Tag:   tag(XMLTag{Name: "", Type: XMLAttr, Omitempty: true}.String()),
+			Doc:   comment("extended attributes"),
+		})
 	}
 	return []ast.Decl{&ast.GenDecl{Tok: token.TYPE, Specs: []ast.Spec{&ast.TypeSpec{
 		Name: &ast.Ident{Name: t.GoName()},
