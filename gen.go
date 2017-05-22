@@ -99,7 +99,7 @@ func goType(s string) string {
 	case "string":
 		return "string"
 	case "decimal":
-		return "float32"
+		return "decimal.D"
 	}
 	s = strings.TrimSuffix(s, "Type")
 	s = strings.TrimSuffix(s, "type")

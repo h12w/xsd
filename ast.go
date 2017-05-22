@@ -29,6 +29,14 @@ func (s *Schema) Ast(name string) *ast.File {
 				},
 			},
 		},
+		&ast.GenDecl{
+			Tok: token.IMPORT,
+			Specs: []ast.Spec{
+				&ast.ImportSpec{
+					Path: &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: `"h12.me/decimal"`},
+				},
+			},
+		},
 	}
 	f.Decls = append(f.Decls, addBSONTags(elevateSubArrays(decls))...)
 	return f
