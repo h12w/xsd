@@ -77,6 +77,7 @@ type Attribute struct {
 	Name       string      `xml:"name,attr"`
 	Type       string      `xml:"type,attr"`
 	Use        string      `xml:"use,attr"`
+	Ref        string      `xml:"ref,attr"`
 	SimpleType *SimpleType `xml:"simpleType"`
 	Annotation Annotation  `xml:"annotation"`
 }

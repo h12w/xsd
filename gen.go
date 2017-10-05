@@ -32,10 +32,15 @@ func (a Attribute) GoType(namespace string) string {
 	if a.Type != "" {
 		return goType(a.Type)
 	}
-	if goType(a.SimpleType.Restriction.Base) == "NMTOKEN" {
-		return namespace + a.GoName()
+	if a.SimpleType != nil {
+		if goType(a.SimpleType.Restriction.Base) == "NMTOKEN" {
+			return namespace + a.GoName()
+		}
+		return goType(a.SimpleType.Restriction.Base)
+	} else if a.Ref != "" {
+		return "UnsupportedRefAttribute"
 	}
-	return goType(a.SimpleType.Restriction.Base)
+	return "UnsupportedAtribute"
 }
 
 func (e Element) GoName() string {
