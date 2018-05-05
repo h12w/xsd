@@ -33,7 +33,7 @@ func (s *Schema) Ast(name string) *ast.File {
 			Tok: token.IMPORT,
 			Specs: []ast.Spec{
 				&ast.ImportSpec{
-					Path: &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: `"h12.me/decimal"`},
+					Path: &ast.BasicLit{ValuePos: token.NoPos, Kind: token.STRING, Value: `"h12.io/decimal"`},
 				},
 			},
 		},

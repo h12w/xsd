@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"h12.me/xsd"
+	"h12.io/xsd"
 )
 
 func main() {
